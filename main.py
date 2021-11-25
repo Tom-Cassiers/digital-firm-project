@@ -34,7 +34,9 @@ def convertToEuro():
 async def root(payload: Request):
     body = await payload.json()
 
-    return
+    name = body['name']
+
+    return name
 
 # Create customer account - Salma
 @app.post("/create-customer-account")
@@ -43,7 +45,7 @@ async def root(payload: Request):
 
     return
 
-# Create quote - Salme
+# Create quote - Salma
 @app.post("/create-quote")
 async def root(payload: Request):
     body = await payload.json()
