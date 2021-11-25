@@ -12,3 +12,5 @@ git clone https://github.com/AxelDeSutter/digital-firm-project.git
 <br/>
 <br/>
 You can now open the "digital-firm-project" folder in Visual Studio Code and start writing python code.
+
+## Usage
