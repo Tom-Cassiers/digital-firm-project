@@ -1,10 +1,83 @@
 from fastapi import FastAPI, Request
+import sqlite3
 import uvicorn
+import requests
+from datetime import date
 
 app = FastAPI()
 
-# Init database - Zélie
+# Init database - Axel
+db = sqlite3.connect('database.db', isolation_level=None)
 
+db.execute(
+    '''
+        CREATE TABLE IF NOT EXISTS companies(
+            vat TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            adress TEXT NOT NULL,
+            iban TEXT NOT NULL
+        )
+    '''
+)
+
+db.execute(
+    '''
+        CREATE TABLE IF NOT EXISTS customers(
+            iban TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            adress TEXT NOT NULL,
+            company TEXT NOT NULL
+        )
+    '''
+)
+
+db.execute(
+    '''
+        CREATE TABLE IF NOT EXISTS quotes(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company TEXT NOT NULL,
+            quantity INT NOT NULL,
+            price FLOAT NOT NULL,
+            currency TEXT NOT NULL
+        )
+    '''
+)
+
+db.execute(
+    '''
+        CREATE TABLE IF NOT EXISTS subscriptions(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customer TEXT NOT NULL,
+            quote INT NOT NULL,
+            accepted BOOL NOT NULL,
+            starting TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    '''
+)
+
+db.execute(
+    '''
+        CREATE TABLE IF NOT EXISTS invoices(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            subscription INT NOT NULL,
+            date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            paid BOOL NOT NULL
+        )
+    '''
+)
+
+db.execute(
+    '''
+        CREATE TABLE IF NOT EXISTS rates(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL,
+            currency TEXT NOT NULL,
+            rate FLOAT NOT NULL
+        )
+    '''
+)
 
 # Helper functions - Axel
 # Check credit card validity
@@ -25,11 +98,24 @@ def CheckCreditCard(number):
         return False
 
 # Conversion between currencies
-def convertToEuro():
-    return
+def convertToEuro(amount, currency):
+    today = today = str(date.today())
+    actualRate = db.execute('SELECT * FROM rates WHERE currency = ? AND date = ?', (currency, today)).fetchall()
+    rate = 0
+    if(len(actualRate) > 0):
+        rate = actualRate[0][3]
+    else:
+        rateFromApi = requests.get('https://v6.exchangerate-api.com/v6/9f3b63e712fb3bf92872a235/latest/'+currency).json()
+        if(rateFromApi['result'] == "success"):
+            rate = rateFromApi['conversion_rates']['EUR']
+            db.execute('INSERT INTO rates (date, currency, rate) VALUES (?,?,?)', (today, currency, rate))
+        else:
+            rate = 1
+    return amount * rate
 
-# Routes
-# Create company account - Salma
+
+# # Routes
+# # Create company account - Salma
 @app.post("/create-company-account")
 async def root(payload: Request):
     body = await payload.json()
@@ -38,55 +124,55 @@ async def root(payload: Request):
 
     return name
 
-# Create customer account - Salma
+# # Create customer account - Salma
 @app.post("/create-customer-account")
 async def root(payload: Request):
     body = await payload.json()
 
     return
 
-# Create quote - Salma
+# # Create quote - Salma
 @app.post("/create-quote")
 async def root(payload: Request):
     body = await payload.json()
 
     return
 
-# Create subscription - Zélie
+# # Create subscription - Zélie
 @app.post("/create-subscription")
 async def root(payload: Request):
     body = await payload.json()
 
     return
 
-# Update subscription - Victor
+# # Update subscription - Victor
 @app.post("/update-subscription")
 async def root(payload: Request):
     body = await payload.json()
 
     return
 
-# Retrieve pending invoices - Victor
+# # Retrieve pending invoices - Victor
 @app.post("/pending-invoices")
 async def root(payload: Request):
     body = await payload.json()
 
     return
 
-# Update invoice (paid/unpaid) - Tom
+# # Update invoice (paid/unpaid) - Tom
 @app.post("/update-invoice")
 async def root(payload: Request):
     body = await payload.json()
-    
+
     return
 
-# Retrieve company's statistics - Tom
+# # Retrieve company's statistics - Tom
 @app.post("/company-statistics")
 async def root(payload: Request):
     body = await payload.json()
-    
+
     return
 
-# Start server
+# # Start server
 if __name__ == '__main__':
     uvicorn.run(app, host='127.0.0.1', port=8000)
