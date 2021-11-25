@@ -98,10 +98,13 @@ def CheckCreditCard(number):
         return False
 
 # Conversion between currencies
+# - Example
+# - Convert 100$ to €:
+# - AnyVariableName = convertToEuro(100, "USD")
 def convertToEuro(amount, currency):
     today = today = str(date.today())
     actualRate = db.execute('SELECT * FROM rates WHERE currency = ? AND date = ?', (currency, today)).fetchall()
-    rate = 0
+    rate = 1
     if(len(actualRate) > 0):
         rate = actualRate[0][3]
     else:
@@ -112,7 +115,6 @@ def convertToEuro(amount, currency):
         else:
             rate = 1
     return amount * rate
-
 
 # # Routes
 # # Create company account - Salma
