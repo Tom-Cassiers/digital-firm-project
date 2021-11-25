@@ -9,4 +9,4 @@ In vscode, open the terminal, navigate to your desired folder and type in the fo
 git clone https://github.com/AxelDeSutter/digital-firm-project.git
 </code>
 
-You know how to do it I suppose
+You can now open the "digital-firm-project" folder in Visual Studio Code and start writing python code.
