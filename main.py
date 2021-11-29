@@ -78,6 +78,7 @@ db.execute(
         )
     '''
 )
+#dans le cours ils ferment à chaque fois bien la base de données, à faire aussi ici? 
 
 # Helper functions - Axel
 # Check credit card validity
@@ -133,19 +134,34 @@ async def root(payload: Request):
 
     return
 
-# # Create quote - Salma
+# # Create quote - Zelie
 @app.post("/create-quote")
 async def root(payload: Request):
     body = await payload.json()
+    db = sqlite3.connect('database.db', isolation_level=None)
+    
+    quote = db.execute('''
+            INSERT INTO quotes
+            (company, quantity, price, currency)
+            VALUES ('{company}','{quantity}','{price}','{currency}')
+            '''.format(company=body['company'],quantity=body['quantity'],price=body['price'],currency=body['currency']))
+    return quote 
 
-    return
 
 # # Create subscription - Zélie
 @app.post("/create-subscription")
 async def root(payload: Request):
     body = await payload.json()
+    db = sqlite3.connect('database.db', isolation_level=None)
 
-    return
+    subscription = db.execute('''
+                INSERT INTO subscription
+                (customer, quote, accepted, starting)
+                VALUES ('{customer}', '{quote}','0','{starting}')
+                 '''.format(customer=body['customer'],quote=body['quote'],starting= xxx))
+                 #j'ai mis la valeur 0 par défaut à 'accepted' mais jsp si c'est correct
+                 #aussi, je sais comment définir la date, c'est une fonction spéciale? 
+    return subscription 
 
 # # Update subscription - Victor
 @app.post("/update-subscription")
