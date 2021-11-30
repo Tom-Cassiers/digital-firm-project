@@ -138,7 +138,6 @@ async def root(payload: Request):
 @app.post("/create-quote")
 async def root(payload: Request):
     body = await payload.json()
-    db = sqlite3.connect('database.db', isolation_level=None)
     
     quote = db.execute('''
             INSERT INTO quotes
@@ -152,15 +151,13 @@ async def root(payload: Request):
 @app.post("/create-subscription")
 async def root(payload: Request):
     body = await payload.json()
-    db = sqlite3.connect('database.db', isolation_level=None)
 
     subscription = db.execute('''
                 INSERT INTO subscription
-                (customer, quote, accepted, starting)
-                VALUES ('{customer}', '{quote}','0','{starting}')
-                 '''.format(customer=body['customer'],quote=body['quote'],starting= xxx))
-                 #j'ai mis la valeur 0 par défaut à 'accepted' mais jsp si c'est correct
-                 #aussi, je sais comment définir la date, c'est une fonction spéciale? 
+                (customer, quote, accepted)
+                VALUES ('{customer}', '{quote}','0')
+                 '''.format(customer=body['customer'],quote=body['quote']))
+                 #j'ai mis la valeur 0 par défaut à 'accepted' mais jsp si c'est correct 
     return subscription 
 
 # # Update subscription - Victor
