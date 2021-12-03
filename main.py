@@ -103,7 +103,7 @@ def CheckCreditCard(number):
 # - Convert 100$ to €:
 # - AnyVariableName = convertToEuro(100, "USD")
 def convertToEuro(amount, currency):
-    today = today = str(date.today())
+    today = str(date.today())
     actualRate = db.execute('SELECT * FROM rates WHERE currency = ? AND date = ?', (currency, today)).fetchall()
     rate = 1
     if(len(actualRate) > 0):
