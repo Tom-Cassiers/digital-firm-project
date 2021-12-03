@@ -164,15 +164,23 @@ async def root(payload: Request):
 @app.post("/update-subscription")
 async def root(payload: Request):
     body = await payload.json()
-
-    return
+    accepted = body['accepted']
+    id = body['id']
+    if accepted==True:
+        db.execute('UPDATE subscription set accepted = ? WHERE id = ?',(accepted, (int(id))))
+        return "Subscription updated"
+    else:
+        return "Bad request"
+    
 
 # # Retrieve pending invoices - Victor
 @app.post("/pending-invoices")
 async def root(payload: Request):
     body = await payload.json()
-
-    return
+    id=body['user']
+    pending_invoices = db.execute('SELECT * from invoices WHERE paid=0 WHERE id ').fetchall()
+    return pending_invoices
+    
 
 # # Update invoice (paid/unpaid) - Tom
 @app.post("/update-invoice")
