@@ -208,13 +208,31 @@ async def root(payload: Request):
             return "bad credit card number"
     else:
         return "no invoice found"
+   
 
 # # Retrieve company's statistics - Tom
 @app.post("/company-statistics")
 async def root(payload: Request):
     body = await payload.json()
+    id = body['company_vat_id']
+    quote = db.execute('SELECT * FROM quotes WHERE company = ?', (id))
+    MRR = 0
+    ARR = 0
+    ARC = 0
+    
+    for line in quote:
+        price = db.execute('SELECT price FROM quote')
+        join_subscription = db.execute('SELECT * FROM subscriptions JOIN quotes ON subcriptions.quote = quotes.id')
+        for line in join_subscription:
+            MRR += price
 
-    return
+
+    return {
+        "MRR" : MRR, 
+        "ARR" : ARR,
+        "ARC" : ARC
+    }
+       
 
 # # Start server
 if __name__ == '__main__':
