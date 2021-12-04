@@ -219,20 +219,24 @@ async def root(payload: Request):
     MRR = 0
     ARR = 0
     ARC = 0
+    counter = 0
     
     for line in quote:
         price = db.execute('SELECT price FROM quote')
         join_subscription = db.execute('SELECT * FROM subscriptions JOIN quotes ON subcriptions.quote = quotes.id')
         for line in join_subscription:
             MRR += price
-
+            ARR = MRR*12
+            counter+=1
+    
+    if (counter > 0): 
+        ARC = MRR/line
 
     return {
         "MRR" : MRR, 
         "ARR" : ARR,
         "ARC" : ARC
     }
-       
 
 # # Start server
 if __name__ == '__main__':
